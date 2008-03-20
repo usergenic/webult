@@ -5,32 +5,30 @@
   margin: 0;
   padding: 0;
 }
-
-#header {
-  margin: 10px auto;
-  width: 672px;
-  text-align: center;
+body {
+  padding-top: 117px;
+  background-color: #000;
+  background-image: url(../images/frameblack.jpg);
+  background-position: top center;
+  background-repeat: no-repeat;
 }
 
 #gameboard {
   height: 416px; /* 32px tile * 13 tiles */
   width: 672px;  /* 32px tile * 21 tiles */
-  border-color: #ccc;
-  border-style: inset;
-  border-width: 10px;
   margin: 0px auto;
   position: relative;
 }
 
 #textconsole {
-  border-color: #ccc;
-  border-style: inset;
+  border-color: #cc9;
+  border-style: outset;
   border-width: 10px;
   background-color: #000;
   color: #fff;
   padding: 5px 10px;
   position: relative;
-  margin: 10px auto;
+  margin: 0 auto;
   font-family: System, Courier, monospace;
   font-size: 16px;
   font-weight: bold;
