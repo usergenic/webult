@@ -17,15 +17,18 @@ body {
   height: 416px; /* 32px tile * 13 tiles */
   width: 672px;  /* 32px tile * 21 tiles */
   margin: 0px auto;
+  color: #fff;
   position: relative;
+  text-align: center;
+  vertical-align: middle;
 }
 
 #textconsole {
   border-color: #cc9;
   border-style: outset;
   border-width: 10px;
-  background-color: #000;
-  color: #fff;
+  background-color: #cc9;
+  color: #000;
   padding: 5px 10px;
   position: relative;
   margin: 0 auto;
@@ -33,6 +36,7 @@ body {
   font-size: 16px;
   font-weight: bold;
   width: 652px;
+  display: block;
 }
 
 .tile {
