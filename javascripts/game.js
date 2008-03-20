@@ -30,14 +30,14 @@ Game.prototype = {
         case 1: type = 'spider'; break;
         case 2: type = 'troll';  break;
         case 3: type = 'beholder'; break;
-        case 4: type = 'rogue'; break; 
+        case 4: type = 'ogre'; break; 
         case 5: type = 'headless'; break;
         case 6: type = 'ettin'; break;
         case 7: type = 'dragon'; break;
         case 8: type = 'wizard'; break;
         case 9: type = 'skeleton'; break;
         case 10: type = 'balrog'; break;
-        case 11: type = 'fighter'; break;
+        case 11: type = 'phantom'; break;
       }
       var character = this.createCharacter(type, x, y);
       character.tiles = [type+1,type+2,type+3,type+4];
