@@ -6,6 +6,7 @@ Game.prototype = {
     new Ajax.Request(url, {
       method: 'get',
       onSuccess: function(response) {
+        $('gameboard').innerHTML='&nbsp;';
         game.gameboard = new Gameboard(game, response.responseText);
         game.start();
       }
@@ -40,14 +41,37 @@ Game.prototype = {
         case 11: type = 'phantom'; break;
       }
       var character = this.createCharacter(type, x, y);
+      character.mood = 'aggressive';
       character.tiles = [type+1,type+2,type+3,type+4];
     }
   },
 
   start: function() {
+    this.enabled = true;
+    this.queuedCommand = null;
     this.characters = [];
     this.fluidClicks = 0;
+    this.flashCount = 0;
     this.player = this.createCharacter('player',60,20);
+    player = this.player;
+    player.hp = 200;
+    renderStatus = function() {
+      $('header').innerHTML="<h1>ULTIMAte Demo</h1><h2>Player Health: "+player.hp.toString()+"</h2>";
+    };
+    renderStatus();
+    player.hurt = function(damage) {
+      player.hp = player.hp - damage;
+      renderStatus();
+      if(player.hp < 1) {
+        player.die();
+      }
+    };
+    player.die = function() {
+      $('header').innerHTML="<h1>Player is Dead</h1><h2>GAME OVER</h2>";
+      player.tiles=['corpse'];
+      game.flashCount = 666; // hack because of crappy flash algorithm
+      game.enabled = false;
+    };
     this.player.tiles=['paladin1','paladin2'];
 
     whirlpool = this.createCharacter('whirlpool',24,35);
@@ -89,7 +113,7 @@ Game.prototype = {
   activeRender: function() {
     this.render();
     this.fluidClicks++;
-    if(this.fluidClicks > 32) this.fluidClicks=1;
+    if(this.fluidClicks > 16) this.fluidClicks=1;
     window.setTimeout('game.activeRender()', 300);
   },
   
@@ -105,39 +129,45 @@ Game.prototype = {
   },
   
   playerCommand: function(command) {
-    switch(this.commandPrefix) {
-      case 'attack': this.commandPrefix = null;
-                     switch(command) {
-                       case 'up'   : this.player.attack(0,-1); break;
-                       case 'down' : this.player.attack(0, 1); break;
-                       case 'left' : this.player.attack(-1,0); break;
-                       case 'right': this.player.attack( 1,0); break;
-                       default:
-                        this.textConsole.print('Nothing');
-                     }
-                     break;
-      default: this.commandPrefix = null;
-               switch(command) {
-                 case 'pass': this.commandPrefix = null;
-                              this.textConsole.print('Pass...');
-                              this.turn();
-                              break;
-                 case 'attack': this.commandPrefix = 'attack'; 
-                                this.textConsole.print('Attack - Direction?');
+    if(this.enabled) {
+      switch(this.commandPrefix) {
+        case 'attack': this.commandPrefix = null;
+                       switch(command) {
+                         case 'up'   : this.player.attack(0,-1); break;
+                         case 'down' : this.player.attack(0, 1); break;
+                         case 'left' : this.player.attack(-1,0); break;
+                         case 'right': this.player.attack( 1,0); break;
+                         default:
+                          this.textConsole.print('Nothing');
+                       }
+                       this.turn();
+                       break;
+        default: this.commandPrefix = null;
+                 switch(command) {
+                   case 'pass': this.commandPrefix = null;
+                                this.textConsole.print('Pass...');
+                                this.turn();
                                 break;
-                 case 'up':     this.textConsole.print('North');
-                                this.move('up');
-                                break;
-                 case 'down':   this.textConsole.print('South');
-                                this.move('down');
-                                break;
-                 case 'left':   this.textConsole.print('West');
-                                this.move('left');
-                                break;
-                 case 'right':  this.textConsole.print('East');
-                                this.move('right');
-                                break;
-               }
+                   case 'attack': this.commandPrefix = 'attack'; 
+                                  this.textConsole.print('Attack - Direction?');
+                                  break;
+                   case 'up':     this.textConsole.print('North');
+                                  this.move('up');
+                                  break;
+                   case 'down':   this.textConsole.print('South');
+                                  this.move('down');
+                                  break;
+                   case 'left':   this.textConsole.print('West');
+                                  this.move('left');
+                                  break;
+                   case 'right':  this.textConsole.print('East');
+                                  this.move('right');
+                                  break;
+                 }
+      }
+    }
+    else {
+      this.queuedCommand = command;
     }
   },
   
@@ -148,7 +178,7 @@ Game.prototype = {
         character[character.mood+'Action']();
       }
     }
-    if(Dice.roll(1,10)==1) {
+    if(Dice.roll(1,20)==1) {
       var xy=this.npcGenerators[Dice.roll(1,this.npcGenerators.length)-1];
       var x=xy[0];
       var y=xy[1];

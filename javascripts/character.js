@@ -12,22 +12,48 @@ Character.prototype = {
     this.swims=false;
     this.flies=false;
   },
+  aggressiveAction: function() {
+    this.attackOrPursue(this.gameboard.game.player);
+  },
   attack: function(xOffset, yOffset) {
     y=this.y+yOffset;
     x=this.x+xOffset
     var target=this.gameboard.unionMatrix[y][x];
     if(typeof(target)=='object' && target != null) {
       switch(Dice.roll(1,3)) {
-        case 1:  this.gameboard.game.textConsole.print(target.type+' hit!!!');
-                 this.gameboard.flash('hit',x,y);
+        case 1:  this.gameboard.game.textConsole.print(this.type.capitalize() +' hit '+target.type+'!!!');
                  target.hurt(Dice.roll(1,10));
+                 this.gameboard.flash('hit',x,y);
                  break;
         default: this.gameboard.flash('attack',x,y);
-                 this.gameboard.game.textConsole.print(target.type+' missed.');
+                 this.gameboard.game.textConsole.print(this.type.capitalize() +' missed '+target.type+'.');
       }
     }
     else {
       this.gameboard.game.textConsole.print('Nothing to attack there.');
+    }
+  },
+  attackOrPursue: function(target) {
+    // attack if in range
+    if(Math.abs(this.x-target.x)<=1 && Math.abs(this.y-target.y)<=1) {
+      this.attack(target.x-this.x, target.y-this.y);
+    }
+    else { // pursue otherwise
+      var xOffset = target.x-this.x;
+      var yOffset = target.y-this.y;
+      if(xOffset < -1) xOffset = -1;
+      if(xOffset >  1) xOffset =  1;
+      if(yOffset < -1) yOffset = -1;
+      if(yOffset >  1) yOffset =  1;
+      if(this.okayMove(xOffset,yOffset)) 
+        return this.move(xOffset, yOffset);
+      if(xOffset == 0 && yOffset != 0 && this.okayMove(0, yOffset)) 
+        return this.move(0, yOffset);
+      if(yOffset == 0 && xOffset != 0 && this.okayMove(xOffset, 0)) 
+        return this.move(xOffset, 0);
+      if(this.okayMove(0, yOffset)) 
+        return this.move(0, yOffset);
+      return this.move(xOffset, 0);
     }
   },
   die: function() {
@@ -35,13 +61,13 @@ Character.prototype = {
     this.dead=true;
     for(c=0;c<characters.length;c++) {
       if(characters[c].dead) {
-        characters.splice(c);
+        characters.splice(c,1);
         c--;
       }
     }
     this.gameboard.unionMatrix[this.y][this.x]=
       this.gameboard.tileMatrix[this.y][this.x];
-    this.gameboard.game.textConsole.print(this.type + ' dies.');
+    this.gameboard.game.textConsole.print(this.type.capitalize() + ' dies.');
   },
   hurt: function(damage) {
     this.hp = this.hp - damage;

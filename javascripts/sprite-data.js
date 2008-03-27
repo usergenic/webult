@@ -42,42 +42,42 @@ var SpriteData = {
     }
   }
 
-  for(var f=0;f<32;f++){
-    SpriteData.tile.tileMap['deepwater'+f] = {
+  for(var f=0;f<16;f++){
+    SpriteData.tile.tileMap['deepwater'+(15-f)] = {
       x: 0,
       y: 0,
       left: 16*32,
-      top:  f+0,
+      top:  (f*2)+0,
       width: 32,
       height:32
     };
   }
-  for(var f=0;f<32;f++){
-    SpriteData.tile.tileMap['water'+f] = {
+  for(var f=0;f<16;f++){
+    SpriteData.tile.tileMap['water'+(15-f)] = {
       x: 0,
       y: 0,
       left: 16*32,
-      top:  f+64,
+      top:  (f*2)+64,
       width: 32,
       height:32
     };
   }
-  for(var f=0;f<32;f++){
-    SpriteData.tile.tileMap['shallowwater'+f] = {
+  for(var f=0;f<16;f++){
+    SpriteData.tile.tileMap['shallowwater'+(15-f)] = {
       x: 0,
       y: 0,
       left: 16*32,
-      top:  f+128,
+      top:  (f*2)+128,
       width: 32,
       height:32
     };
   }
-  for(var f=0;f<32;f++){
-    SpriteData.tile.tileMap['lava'+f] = {
+  for(var f=0;f<16;f++){
+    SpriteData.tile.tileMap['lava'+(15-f)] = {
       x: 0,
       y: 0,
       left: 16*32,
-      top:  f+192,
+      top:  (f*2)+192,
       width: 32,
       height:32
     };

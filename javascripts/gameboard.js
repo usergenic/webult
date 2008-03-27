@@ -54,14 +54,24 @@ Gameboard.prototype = {
   flash: function(tile, x, y) {
     var matrix = this.unionMatrix;
     var oldTile = matrix[y][x];
-    matrix[y][x]=tile;
-    this.game.render();
-    window.setTimeout(function(a,b) {
-      if(!oldTile.dead) {
+    var game = this.game;
+    game.enabled=false;
+    game.flashCount++;
+    setTimeout(function(){
+      matrix[y][x]=tile;
+      game.render();
+      setTimeout(function(){
         matrix[y][x]=oldTile;
-      }
-    }, 300);
-    this.game.render();
+        game.render();
+        game.flashCount--;
+        if(game.flashCount<1) game.enabled=true;
+        if(game.queuedCommand) {
+          var command = game.queuedCommand;
+          game.queuedCommand = null;
+          game.playerCommand(command);
+        }
+      }, 100);
+    }, 1);
   },
   
   // given gameboard source content, load the tiles according

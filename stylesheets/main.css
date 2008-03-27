@@ -6,13 +6,30 @@
   padding: 0;
 }
 body {
-  padding-top: 117px;
+  padding-top: 7px;
   background-color: #000;
   background-image: url(../images/frameblack.jpg);
   background-position: top center;
   background-repeat: no-repeat;
 }
 
+#header {
+  height: 90px;
+  width: 652px;
+  border-color: #cc9;
+  border-style: outset;
+  border-width: 10px;
+  background-color: #cc9;
+  color: #000;
+  margin: 0 auto;
+  padding: 5px 10px;
+  position: relative;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  display: block;
+}
 #gameboard {
   height: 416px; /* 32px tile * 13 tiles */
   width: 672px;  /* 32px tile * 21 tiles */
