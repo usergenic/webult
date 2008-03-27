@@ -1,0 +1,11 @@
+h1. ULTIMAte DHTML Demo
+
+!http://we.bu.la/webult-20080326-234100.jpg!
+
+This was just something I threw together in about 10 hours to demonstrate
+my DHTML skills and to test a hypothesis that such a thing was possible.
+This isn't much more than an engine for toddling around a map and getting
+your butt kicked, but its a proof-of-concept that could be extended or
+munged around by someone with more free time than myself.
+
+--Brendan
