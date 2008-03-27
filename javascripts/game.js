@@ -56,7 +56,7 @@ Game.prototype = {
     player = this.player;
     player.hp = 200;
     renderStatus = function() {
-      $('header').innerHTML="<h1>ULTIMAte Demo</h1><h2>Player Health: "+player.hp.toString()+"</h2>";
+      $('header').innerHTML="<h1><a href=\"http://www.brendanbaldwin.com/resume\">Brendan's</a> ULTIMAte DHTML Demo</h1><h2>Player Health: "+player.hp.toString()+"</h2>";
     };
     renderStatus();
     player.hurt = function(damage) {
@@ -67,7 +67,7 @@ Game.prototype = {
       }
     };
     player.die = function() {
-      $('header').innerHTML="<h1>Player is Dead</h1><h2>GAME OVER</h2>";
+      $('header').innerHTML="<h1><a href=\"http://www.brendanbaldwin.com/resume\">Brendan's</a> ULTIMAte DHTML Demo</h1><h2>YOU ARE DEAD - GAME OVER</h2>";
       player.tiles=['corpse'];
       game.flashCount = 666; // hack because of crappy flash algorithm
       game.enabled = false;
