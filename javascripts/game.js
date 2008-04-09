@@ -3,6 +3,8 @@ Game.prototype = {
   
   initialize: function(url) {
     this.commandPrefix=null;
+    this.textConsole = new TextConsole($('textconsole'));
+    this.textConsole.print("Loading gameboard...");
     new Ajax.Request(url, {
       method: 'get',
       onSuccess: function(response) {
@@ -11,6 +13,35 @@ Game.prototype = {
         game.start();
       }
     });
+  },
+
+  activeRender: function() {
+    this.render();
+    this.fluidClicks++;
+    if(this.fluidClicks > 16) this.fluidClicks=1;
+    window.setTimeout('game.activeRender()', 300);
+  },
+  
+  bindKeyboardEvents: function() {
+    Keyboard.bind(document);
+    Keyboard.observe('keydown','up',function(){game.playerCommand('up')});
+    Keyboard.observe('keydown','down',function(){game.playerCommand('down')});
+    Keyboard.observe('keydown','left',function(){game.playerCommand('left')});
+    Keyboard.observe('keydown','right',function(){game.playerCommand('right')});
+    Keyboard.observe('keydown','a',function(){game.playerCommand('attack')});
+    Keyboard.observe('keydown','space',function(){game.playerCommand('pass')});
+  },
+  
+  bringOutYourDead: function() {
+    for(c=0;c<this.characters.length;c++) {
+      var character=this.characters[c];
+      if(character.dead) {
+        this.gameboard.unionMatrix[character.y][character.x]=
+          this.gameboard.tileMatrix[character.y][character.x];
+        this.characters.splice(c,1);
+        c--;
+      }
+    }
   },
 
   createCharacter: function(type, x, y) {
@@ -45,78 +76,80 @@ Game.prototype = {
       character.tiles = [type+1,type+2,type+3,type+4];
     }
   },
+  
+  generateNpcs: function() {
+    if(Dice.roll(1,20)==1) {
+      var xy=this.npcGenerators[Dice.roll(1,this.npcGenerators.length)-1];
+      var x=xy[0];
+      var y=xy[1];
+      if(typeof(this.gameboard.unionMatrix[y][x])=='string') {
+        this.generateNpc(x,y);
+      }
+    }
+  },
 
+  generatePlayer: function() {
+    this.player = this.createCharacter('player',60,20);
+    player = this.player;
+    player.hp = 200;
+    player.die = function() {
+      player.tiles=['corpse'];
+      game.flashCount = 666; // hack because of crappy flash algorithm
+      game.enabled = false;
+      game.textConsole.print("Player DIES!");
+    };
+    this.player.tiles=['paladin1','paladin2'];
+  },
+  
+  generateWhirlpool: function() {
+    whirlpool = this.createCharacter('whirlpool',24,35);
+    whirlpool.tiles=['whirlpool1','whirlpool2'];
+    whirlpool.swims=true;
+    whirlpool.walks=false;
+  },
+  
+  registerNpcGenerators: function() {
+    this.npcGenerators = [];
+    for(r=0;r<this.gameboard.tileMatrix.length;r++) {
+      for(c=0;c<this.gameboard.tileMatrix.length;c++) {
+        switch(this.gameboard.tileMatrix[r][c]) {
+          case 'dungeon' : this.npcGenerators.push([c,r]);
+        }
+      }
+    }
+  },
+  
+  renderStatus: function() {
+    if(this.player.hp > 0) {
+      var statusMessage = "Player Health: "+this.player.hp.toString();
+    } else {
+      var statusMessage = "YOU ARE DEAD - GAME OVER";
+    }
+    $('header').innerHTML="<h1><a href=\"http://www.brendanbaldwin.com/resume\">Brendan's</a> ULTIMAte DHTML Demo</h1><h2>" + statusMessage + "</h2>";
+  },
+  
   start: function() {
     this.enabled = true;
     this.queuedCommand = null;
     this.characters = [];
     this.fluidClicks = 0;
     this.flashCount = 0;
-    this.player = this.createCharacter('player',60,20);
-    player = this.player;
-    player.hp = 200;
-    renderStatus = function() {
-      $('header').innerHTML="<h1><a href=\"http://www.brendanbaldwin.com/resume\">Brendan's</a> ULTIMAte DHTML Demo</h1><h2>Player Health: "+player.hp.toString()+"</h2>";
-    };
-    renderStatus();
-    player.hurt = function(damage) {
-      player.hp = player.hp - damage;
-      renderStatus();
-      if(player.hp < 1) {
-        player.die();
-      }
-    };
-    player.die = function() {
-      $('header').innerHTML="<h1><a href=\"http://www.brendanbaldwin.com/resume\">Brendan's</a> ULTIMAte DHTML Demo</h1><h2>YOU ARE DEAD - GAME OVER</h2>";
-      player.tiles=['corpse'];
-      game.flashCount = 666; // hack because of crappy flash algorithm
-      game.enabled = false;
-    };
-    this.player.tiles=['paladin1','paladin2'];
-
-    whirlpool = this.createCharacter('whirlpool',24,35);
-    whirlpool.tiles=['whirlpool1','whirlpool2'];
-    whirlpool.swims=true;
-    whirlpool.walks=false;
-
-    Keyboard.bind(document);
-    Keyboard.observe('keydown','up',function(){game.playerCommand('up')});
-    Keyboard.observe('keydown','down',function(){game.playerCommand('down')});
-    Keyboard.observe('keydown','left',function(){game.playerCommand('left')});
-    Keyboard.observe('keydown','right',function(){game.playerCommand('right')});
-    Keyboard.observe('keydown','a',function(){game.playerCommand('attack')});
-    Keyboard.observe('keydown','space',function(){game.playerCommand('pass')});
-
-    game.textConsole = new TextConsole($('textconsole'));
-
-    game.npcGenerators = [];
-    for(r=0;r<this.gameboard.tileMatrix.length;r++) {
-      for(c=0;c<this.gameboard.tileMatrix.length;c++) {
-        switch(this.gameboard.tileMatrix[r][c]) {
-          case 'dungeon' : game.npcGenerators.push([c,r]);
-        }
-      }
-    }
-
-    // this.render();
+    this.generatePlayer();
+    this.renderStatus();
+    this.generateWhirlpool();
+    this.registerNpcGenerators();
+    this.bindKeyboardEvents();
     this.activeRender();
-    game.textConsole.print("Welcome to Brendan's DHTML Demo, version 0.Alpha");
-    game.textConsole.print("You might need to click inside this page for the");
-    game.textConsole.print("scripts to pick up on key-presses.  Use your arrow");
-    game.textConsole.print("keys to move.  Use the 'A' key, followed by arrow for attack.");
+    this.textConsole.print("Welcome to Brendan's DHTML Demo, version 0.Alpha");
+    this.textConsole.print("You might need to click inside this page for the");
+    this.textConsole.print("scripts to pick up on key-presses.  Use your arrow");
+    this.textConsole.print("keys to move.  Use the 'A' key, followed by arrow for attack.");
   },
 
   render: function() {
     this.gameboard.render(this.player.x-10, this.player.y-6, 21, 13);
   },
 
-  activeRender: function() {
-    this.render();
-    this.fluidClicks++;
-    if(this.fluidClicks > 16) this.fluidClicks=1;
-    window.setTimeout('game.activeRender()', 300);
-  },
-  
   move: function(direction) {
     switch(direction) {
       case 'up'   : this.player.move(0,-1); break;
@@ -172,20 +205,16 @@ Game.prototype = {
   },
   
   turn: function() {
+    this.gameboard.unionMatrix[player.y][player.x]=this.player;
     for(var c=0;c<this.characters.length;c++) {
       var character=this.characters[c];
       if(character.type != 'player') {
         character[character.mood+'Action']();
       }
     }
-    if(Dice.roll(1,20)==1) {
-      var xy=this.npcGenerators[Dice.roll(1,this.npcGenerators.length)-1];
-      var x=xy[0];
-      var y=xy[1];
-      if(typeof(this.gameboard.unionMatrix[y][x])=='string') {
-        this.generateNpc(x,y);
-      }
-    }
+    this.generateNpcs();
+    this.bringOutYourDead();
+    this.renderStatus();
   }
 
 };

@@ -53,24 +53,28 @@ Gameboard.prototype = {
   // temporarily displays a different sprite at the x,y
   flash: function(tile, x, y) {
     var matrix = this.unionMatrix;
-    var oldTile = matrix[y][x];
     var game = this.game;
     game.enabled=false;
     game.flashCount++;
     setTimeout(function(){
+      var oldTile = matrix[y][x];
       matrix[y][x]=tile;
       game.render();
       setTimeout(function(){
-        matrix[y][x]=oldTile;
+        if(matrix[y][x]==tile) {
+          matrix[y][x]=oldTile;
+        }
         game.render();
         game.flashCount--;
-        if(game.flashCount<1) game.enabled=true;
+        if(game.flashCount<1) {
+          game.enabled=true;
+        }
         if(game.queuedCommand) {
           var command = game.queuedCommand;
           game.queuedCommand = null;
           game.playerCommand(command);
         }
-      }, 100);
+      }, 200);
     }, 1);
   },
   

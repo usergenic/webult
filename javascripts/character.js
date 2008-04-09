@@ -20,7 +20,7 @@ Character.prototype = {
     x=this.x+xOffset
     var target=this.gameboard.unionMatrix[y][x];
     if(typeof(target)=='object' && target != null) {
-      switch(Dice.roll(1,3)) {
+      switch(Dice.roll(1,2)) {
         case 1:  this.gameboard.game.textConsole.print(this.type.capitalize() +' hit '+target.type+'!!!');
                  target.hurt(Dice.roll(1,10));
                  this.gameboard.flash('hit',x,y);
@@ -57,16 +57,7 @@ Character.prototype = {
     }
   },
   die: function() {
-    var characters=this.gameboard.game.characters;
     this.dead=true;
-    for(c=0;c<characters.length;c++) {
-      if(characters[c].dead) {
-        characters.splice(c,1);
-        c--;
-      }
-    }
-    this.gameboard.unionMatrix[this.y][this.x]=
-      this.gameboard.tileMatrix[this.y][this.x];
     this.gameboard.game.textConsole.print(this.type.capitalize() + ' dies.');
   },
   hurt: function(damage) {
