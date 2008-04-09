@@ -52,28 +52,60 @@ Game.prototype = {
     character.y=y;
     this.characters.push(character);
     character.type=type;
+    switch(type) {
+      case 'squid':
+      case 'nixie':
+      case 'seahorse':
+      case 'seaserpent': character.walks=false; character.swims=true; break;
+    }
     return character;
   },
   
   generateNpc: function(x, y) {
+    
+    switch(this.gameboard.tileMatrix[y][x]) {
+      case 'deepwater':
+      case 'shallowwater':
+      case 'water': var environment='water'; break;
+      default: var environment='land';
+    }
+
     if(this.characters.length < 50) {
-      var type = 'orc';
-      switch(Dice.roll(1,14)) {
-        case 1: type = 'spider'; break;
-        case 2: type = 'troll';  break;
-        case 3: type = 'beholder'; break;
-        case 4: type = 'ogre'; break; 
-        case 5: type = 'headless'; break;
-        case 6: type = 'ettin'; break;
-        case 7: type = 'dragon'; break;
-        case 8: type = 'wizard'; break;
-        case 9: type = 'skeleton'; break;
-        case 10: type = 'balrog'; break;
-        case 11: type = 'phantom'; break;
+      switch(environment) {
+        case 'land':
+          var type  = 'orc';
+          var tiles = 4;
+          switch(Dice.roll(1,14)) {
+            case 1: type = 'spider'; break;
+            case 2: type = 'troll';  break;
+            case 3: type = 'beholder'; break;
+            case 4: type = 'ogre'; break; 
+            case 5: type = 'headless'; break;
+            case 6: type = 'ettin'; break;
+            case 7: type = 'dragon'; break;
+            case 8: type = 'wizard'; break;
+            case 9: type = 'skeleton'; break;
+            case 10: type = 'balrog'; break;
+            case 11: type = 'phantom'; break;
+          }
+          break;
+        case 'water':
+          var type  = 'squid';
+          var tiles = 2;
+          switch(Dice.roll(1,8)) {
+            case 1: type = 'nixie'; break;
+            case 2: type = 'squid'; break;
+            case 3: type = 'seaserpent'; break;
+            case 4: type = 'seahorse'; break;
+          }
+          break;
       }
       var character = this.createCharacter(type, x, y);
       character.mood = 'aggressive';
-      character.tiles = [type+1,type+2,type+3,type+4];
+      character.tiles = [];
+      for(var t=1;t<=tiles;t++) {
+        character.tiles.push(type+t);
+      }
     }
   },
   
@@ -113,7 +145,10 @@ Game.prototype = {
     for(r=0;r<this.gameboard.tileMatrix.length;r++) {
       for(c=0;c<this.gameboard.tileMatrix.length;c++) {
         switch(this.gameboard.tileMatrix[r][c]) {
-          case 'dungeon' : this.npcGenerators.push([c,r]);
+          case 'dungeon'   : this.npcGenerators.push([c,r]); break;
+          case 'water':
+          case 'shallowwater':
+          case 'deepwater' : if(Dice.roll(1,100)==1){this.npcGenerators.push([c,r])} break;
         }
       }
     }
