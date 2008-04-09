@@ -37,7 +37,7 @@ Game.prototype = {
       var character=this.characters[c];
       if(character.dead) {
         this.gameboard.unionMatrix[character.y][character.x]=
-          this.gameboard.tileMatrix[character.y][character.x];
+            this.gameboard.tileMatrix[character.y][character.x];
         this.characters.splice(c,1);
         c--;
       }
@@ -110,7 +110,7 @@ Game.prototype = {
   },
   
   generateNpcs: function() {
-    if(Dice.roll(1,20)==1) {
+    if(Dice.roll(1,10)==1) {
       var xy=this.npcGenerators[Dice.roll(1,this.npcGenerators.length)-1];
       var x=xy[0];
       var y=xy[1];
@@ -146,9 +146,7 @@ Game.prototype = {
       for(c=0;c<this.gameboard.tileMatrix.length;c++) {
         switch(this.gameboard.tileMatrix[r][c]) {
           case 'dungeon'   : this.npcGenerators.push([c,r]); break;
-          case 'water':
-          case 'shallowwater':
-          case 'deepwater' : if(Dice.roll(1,100)==1){this.npcGenerators.push([c,r])} break;
+          case 'deepwater' : if(Dice.roll(1,10)==1){this.npcGenerators.push([c,r])} break;
         }
       }
     }
@@ -159,6 +157,8 @@ Game.prototype = {
       var statusMessage = "Player Health: "+this.player.hp.toString();
     } else {
       var statusMessage = "YOU ARE DEAD - GAME OVER";
+      this.gameboard.unionMatrix[this.player.y][this.player.x]='corpse';
+      this.gameboard.tileMatrix[this.player.y][this.player.x]='corpse';
     }
     $('header').innerHTML="<h1><a href=\"http://www.brendanbaldwin.com/resume\">Brendan's</a> ULTIMAte DHTML Demo</h1><h2>" + statusMessage + "</h2>";
   },
@@ -182,6 +182,7 @@ Game.prototype = {
   },
 
   render: function() {
+    if(this.player && this.player.dead) this.gameboard.unionMatrix[this.player.y][this.player.x]='corpse';
     this.gameboard.render(this.player.x-10, this.player.y-6, 21, 13);
   },
 
@@ -254,4 +255,4 @@ Game.prototype = {
 
 };
 
-var game = new Game('gameboards/world.txt');
+var game = new Game('gameboards/world.txt?13');
