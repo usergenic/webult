@@ -1,6 +1,6 @@
 h1. ULTIMAte DHTML Demo
 
-!http://farm3.static.flickr.com/2257/2365875650_93ff35a02e.jpg?v=0!
+!https://i.imgur.com/D4a00y4.gif
 
 This was just something I threw together in about 10 hours to demonstrate
 my DHTML skills and to test a hypothesis that such a thing was possible.
