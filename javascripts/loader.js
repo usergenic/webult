@@ -80,5 +80,5 @@ if(typeof(Array.prototype)!='undefined' &&
       this.processLoadQueue();
     }
   }
-  var Loader = new Loader;
+  new Loader();
 }
