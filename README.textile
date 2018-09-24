@@ -8,4 +8,6 @@ This isn't much more than an engine for toddling around a map and getting
 your butt kicked, but its a proof-of-concept that could be extended or
 munged around by someone with more free time than myself.
 
+Check out [live demo](https://usergenic.com/webult/)
+
 --Brendan
