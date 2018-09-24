@@ -160,7 +160,7 @@ Game.prototype = {
       this.gameboard.unionMatrix[this.player.y][this.player.x] = 'corpse';
       this.gameboard.tileMatrix[this.player.y][this.player.x] = 'corpse';
     }
-    $('header').innerHTML = "<h1><a href=\"http://www.brendanbaldwin.com/\">Brendan's</a> ULTIMAte DHTML Demo</h1><h2>" + statusMessage + "</h2>";
+    $('header').innerHTML = "<h1><a href=\"http://usergenic.com/\">Brendan's</a> ULTIMAte DHTML Demo</h1><h2>" + statusMessage + "</h2>";
   },
 
   start: function () {
